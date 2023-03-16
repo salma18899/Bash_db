@@ -1,0 +1,53 @@
+DBHOST="192.168.132.238"
+DBUSER="iti"
+DBPASS="itipass"
+#####################################
+##Function to check for invalid option
+function checkInt {
+NU=${1}
+VI=$(echo ${NU} | grep -c '^[0-9]*$')
+[ ${VI} -eq 0 ] && return 0
+return 1
+}
+#############################
+function CheckIdEX {
+     CID=${1}
+        RES=$(mysql  -u ${DBUSER} -p${DBPASS} -h ${DBHOST} -e "select custid from iti.customers where custid=${CID};")
+        if [ -z "${RES}" ]
+        then
+                return 0
+        else
+                return 1
+        fi
+}
+##############################
+function checkName {
+NA=${1}
+VN=$(echo ${NA} | grep -c '^[[:alpha:]]*$')
+[ ${VN} -eq 0 ] && return 0
+return 1
+}
+############################
+function checkMail {
+EM="${1}"
+VEM=$(echo ${EM} | grep -c "[[:alnum:]]*@[[:alnum:]]*.[[:alnum:]]*")
+if [ ${VEM} -eq 0 ]
+then
+        return 0
+else
+return 1
+fi
+}
+########################
+function CheckMailEX {
+MAIL="${1}"
+RES=$(mysql  -u ${DBUSER} -p${DBPASS} -h ${DBHOST} -e "select custmail from iti.customers where custmail='${MAIL}';")
+        if [ -z "${RES}" ]
+        then
+                return 0
+        else
+                return 1
+        fi
+        }
+                                                                                                                                            51,1          Bot
+
