@@ -1,0 +1,66 @@
+#CheckUser "root"
+#[ ${?} -ne 0 ] && PrintErrorMsg "sorry,permission denied" && exit 5
+CONT=1
+USERID=0
+## Function Takes a Parameter with username and return 0 if the user requested is the same as cuurent user
+
+ #function CheckUser {
+  #      RUSER=${1}
+   #     [ ${RUSER} == ${USER} ] && return 0
+    #    return 1
+
+
+
+#}
+DBHOST="192.168.132.238"
+DBUSER="iti"
+DBPASS="itipass"
+###### Function takes a username, and password then check them in accs.db, and returns 0 if match otherwise returns 1
+function AuthenticateUser () {
+        USERNAME=${1}
+        USERPASS=${2}
+        RES=$(mysql -u ${DBUSER} -p${DBPASS} -h ${DBHOST} -e "select id from iti.user where (username='${USERNAME}') and (userpass=password('${USERPASS}'))");
+        if [ -z "${RES}" ]
+        then
+                return 0
+        else
+                return 1
+        fi
+}
+
+function insertCustomer () {
+CID=${1}
+CNAME="${2}"
+CMAIL="${3}"
+
+mysql -u ${DBUSER} -h ${DBHOST} -p${DBPASS} -e "insert into iti.customers (custid,custname,custmail) values (${CID},'${CNAME}','${CMAIL}');"
+}
+
+function UpdateEmail
+{
+CID=${1}
+CMAIL="${2}"
+mysql -u ${DBUSER} -h ${DBHOST} -p${DBPASS} -e "update iti.customers set custmail='${CMAIL}' where custid=${CID};"
+return ${?}
+}
+function DeleteUser
+{
+ID=${1}
+mysql -u ${DBUSER} -h ${DBHOST} -p${DBPASS} -e "delete  from iti.customers where custid=${ID};"
+return ${?}
+}
+
+
+function queryCustomer () {
+CID=${1}
+ RES=$(mysql -u ${DBUSER} -h ${DBHOST} -p${DBPASS} -e "select * from iti.customers where custid='${CID}';")
+        DATA=$(echo "${RES}" | tail -1)
+        CID=$(echo "${DATA}" | awk ' { print $1 } ')
+        NAME=$(echo "${DATA}" | awk ' { print $2 } ')
+        Email=$(echo "${DATA}" | awk ' { print $3 } ')
+        echo "Customer ID : ${CID}"
+        echo "Customer Name : ${NAME}"
+        echo "Customer Email : ${Email}"
+ #       return ${?}
+}
+
